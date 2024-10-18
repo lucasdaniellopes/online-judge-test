@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Online Coding Judge</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.js"></script>
+  </head>
+  <body>
+    <h1>Complete a função fatorial</h1>
+
+    <textarea id="code-editor" name="code">
+# Função para calcular o fatorial de um número
+def fatorial(n):
+    # TODO: implemente a lógica para calcular o fatorial de n
+    pass
+
+# Entrada de exemplo
+n = int(input())
+print(fatorial(n))
+    </textarea>
+
+    <button id="submit-button" type="button">Submit Code</button>
+
+    <div id="output"></div>
+
+    <script>
+      var editor = CodeMirror.fromTextArea(
+        document.getElementById("code-editor"),
+        {
+          lineNumbers: true,
+          mode: "python",
+          theme: "default",
+        }
+      );
+
+      function submitCode(event) {
+        event.preventDefault();
+
+        var code = editor.getValue();
+        console.log("Enviando código para o backend...");
+
+        fetch("http://127.0.0.1:5000/submit-code", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ code: code }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Erro na resposta do servidor.");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log("Resposta recebida: ", data);
+            document.getElementById("output").innerText = data.result;
+          })
+          .catch((error) => {
+            console.error("Erro:", error);
+            document.getElementById("output").innerText =
+              "Erro na execução: " + error;
+          });
+      }
+
+      document
+        .getElementById("submit-button")
+        .addEventListener("click", submitCode);
+    </script>
+  </body>
+</html>
